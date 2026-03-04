@@ -25,13 +25,13 @@ public class DataSeeder implements CommandLineRunner {
 
         // username / email / password / firstName / lastName / role
         // ⚠ Credentials intentionally match user-service DataSeeder — both DBs stay consistent
-        seedUser("admin", "admin@flight.com", "admin@123", "Admin",   "User", Role.ADMIN);
-        seedUser("user",  "user@flight.com",  "user@123",  "Default", "User", Role.USER);
+        seedUser("admin", "sivaprakashgorantla@gmail.com", "admin@123", "Admin",   "User", Role.ADMIN);
+        seedUser("user",  "sivaprakashgorantla1@gmail.com",  "user@123",  "Default", "User", Role.USER);
 
         log.info("========================================================");
         log.info("  Default credentials (change in production!)");
-        log.info("  ADMIN → username: admin  email: admin@flight.com  password: admin@123");
-        log.info("  USER  → username: user   email: user@flight.com   password: user@123");
+        log.info("  ADMIN → username: admin  email: sivaprakashgorantla@gmail.com  password: admin@123");
+        log.info("  USER  → username: user   email: sivaprakashgorantla1@gmail.com  password: user@123");
         log.info("========================================================");
     }
 

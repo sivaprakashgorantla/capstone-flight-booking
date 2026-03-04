@@ -2,8 +2,12 @@ package com.auth_service.flight.demo.service;
 
 import com.auth_service.flight.demo.dto.AuthRequest;
 import com.auth_service.flight.demo.dto.AuthResponse;
+import com.auth_service.flight.demo.dto.ForgotPasswordRequest;
 import com.auth_service.flight.demo.dto.RegisterRequest;
+import com.auth_service.flight.demo.dto.ResetPasswordRequest;
+import com.auth_service.flight.demo.model.PasswordResetToken;
 import com.auth_service.flight.demo.model.User;
+import com.auth_service.flight.demo.repository.PasswordResetTokenRepository;
 import com.auth_service.flight.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,16 +15,22 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository        userRepository;
-    private final PasswordEncoder       passwordEncoder;
-    private final JwtService            jwtService;
-    private final AuthenticationManager authenticationManager;
+    private final UserRepository               userRepository;
+    private final PasswordEncoder              passwordEncoder;
+    private final JwtService                   jwtService;
+    private final AuthenticationManager        authenticationManager;
+    private final PasswordResetTokenRepository resetTokenRepository;
+    private final EmailService                 emailService;
 
     // ─── Register ──────────────────────────────────────────────────────────────
 
@@ -85,6 +95,59 @@ public class AuthService {
             log.warn("Token validation error: {}", e.getMessage());
             return false;
         }
+    }
+
+    // ─── Forgot Password ───────────────────────────────────────────────────────
+
+    @Transactional
+    public void forgotPassword(ForgotPasswordRequest request) {
+        log.info("Forgot password request for email: {}", request.getEmail());
+
+        // Always respond with success to avoid email enumeration
+        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+            // Invalidate any previous tokens for this user
+            resetTokenRepository.deleteAllByUser(user);
+
+            String rawToken = UUID.randomUUID().toString();
+            PasswordResetToken resetToken = PasswordResetToken.builder()
+                    .token(rawToken)
+                    .user(user)
+                    .expiresAt(LocalDateTime.now().plusMinutes(30))
+                    .used(false)
+                    .build();
+
+            resetTokenRepository.save(resetToken);
+            emailService.sendPasswordResetEmail(user.getEmail(), user.getUsername(), rawToken);
+            log.info("Password reset token issued for user: {}", user.getUsername());
+        });
+    }
+
+    // ─── Reset Password ────────────────────────────────────────────────────────
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+
+        PasswordResetToken resetToken = resetTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired reset token"));
+
+        if (resetToken.isUsed()) {
+            throw new IllegalArgumentException("Reset token has already been used");
+        }
+        if (resetToken.isExpired()) {
+            throw new IllegalArgumentException("Reset token has expired. Please request a new one");
+        }
+
+        User user = resetToken.getUser();
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        resetToken.setUsed(true);
+        resetTokenRepository.save(resetToken);
+
+        log.info("Password successfully reset for user: {}", user.getUsername());
     }
 
     // ─── Helper ────────────────────────────────────────────────────────────────

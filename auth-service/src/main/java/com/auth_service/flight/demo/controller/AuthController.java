@@ -2,7 +2,9 @@ package com.auth_service.flight.demo.controller;
 
 import com.auth_service.flight.demo.dto.AuthRequest;
 import com.auth_service.flight.demo.dto.AuthResponse;
+import com.auth_service.flight.demo.dto.ForgotPasswordRequest;
 import com.auth_service.flight.demo.dto.RegisterRequest;
+import com.auth_service.flight.demo.dto.ResetPasswordRequest;
 import com.auth_service.flight.demo.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -60,6 +62,44 @@ public class AuthController {
         log.info("POST /auth/login - username: {}", request.getUsername());
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    // ─── Forgot Password ───────────────────────────────────────────────────────
+
+    @Operation(
+            summary = "Request a password reset link",
+            description = "Validates the email against the database and sends a reset link. " +
+                          "Always returns 200 to prevent email enumeration attacks."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "If the email is registered, a reset link has been sent")
+    })
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+        log.info("POST /auth/forgot-password - email: {}", request.getEmail());
+        authService.forgotPassword(request);
+        return ResponseEntity.ok(Map.of(
+                "message", "If that email is registered, a reset link has been sent."
+        ));
+    }
+
+    // ─── Reset Password ────────────────────────────────────────────────────────
+
+    @Operation(
+            summary = "Reset password using the token from the email link",
+            description = "Validates the reset token, checks expiry, and sets the new password."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Password reset successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid/expired token or passwords do not match")
+    })
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+        log.info("POST /auth/reset-password - token: {}", request.getToken());
+        authService.resetPassword(request);
+        return ResponseEntity.ok(Map.of("message", "Password has been reset successfully."));
     }
 
     // ─── Validate ──────────────────────────────────────────────────────────────

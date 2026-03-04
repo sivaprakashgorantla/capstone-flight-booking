@@ -22,6 +22,32 @@ public class EmailService {
     private String resetPasswordBaseUrl;
 
     @Async
+    public void sendWelcomeEmail(String toEmail, String username) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromAddress);
+            message.setTo(toEmail);
+            message.setSubject("Welcome to SkyBook ✈ — Registration Successful");
+            message.setText(
+                    "Hi " + username + ",\n\n" +
+                    "Welcome aboard! Your SkyBook account has been created successfully.\n\n" +
+                    "You can now log in and start searching for flights:\n" +
+                    "http://localhost:3000/login\n\n" +
+                    "Account Details:\n" +
+                    "  Username : " + username + "\n" +
+                    "  Email    : " + toEmail + "\n\n" +
+                    "If you did not create this account, please contact our support team immediately.\n\n" +
+                    "Happy travels!\n" +
+                    "— The SkyBook Team"
+            );
+            mailSender.send(message);
+            log.info("Welcome email sent to: {}", toEmail);
+        } catch (Exception e) {
+            log.error("Failed to send welcome email to {}: {}", toEmail, e.getMessage());
+        }
+    }
+
+    @Async
     public void sendPasswordResetEmail(String toEmail, String username, String token) {
         String resetLink = resetPasswordBaseUrl + "?token=" + token;
 

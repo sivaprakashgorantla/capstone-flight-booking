@@ -59,6 +59,8 @@ public class AuthService {
         userRepository.save(user);
         log.info("User registered: {} ({})", user.getUsername(), user.getEmail());
 
+        emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
+
         return buildResponse(jwtService.generateToken(user), user);
     }
 

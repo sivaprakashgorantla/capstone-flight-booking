@@ -831,3 +831,6 @@ com.netflix.discovery.shared.transport.TransportException: Cannot execute reques
 2026-03-04 22:11:08.055 [http-nio-8082-exec-4] INFO  u.user_service.service.UserService - Profile updated successfully for user: admin
 2026-03-04 22:11:17.428 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
 2026-03-04 22:16:17.430 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:21:17.440 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:26:17.446 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:31:17.452 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration

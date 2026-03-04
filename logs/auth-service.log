@@ -3600,3 +3600,148 @@ com.netflix.discovery.shared.transport.TransportException: Cannot execute reques
 	at org.springframework.boot.SpringApplicationShutdownHook.run(SpringApplicationShutdownHook.java:114)
 	at java.base/java.lang.Thread.run(Thread.java:840)
 2026-03-04 18:52:41.307 [SpringApplicationShutdownHook] INFO  com.netflix.discovery.DiscoveryClient - Completed shut down of DiscoveryClient
+2026-03-04 20:42:10.373 [main] INFO  c.a.flight.demo.AuthServiceApplication - Starting AuthServiceApplication using Java 17.0.14 with PID 10964 (C:\practice\2026\capstone-flight-booking\auth-service\target\classes started by DELL in C:\practice\2026\capstone-flight-booking)
+2026-03-04 20:42:10.384 [main] DEBUG c.a.flight.demo.AuthServiceApplication - Running with Spring Boot v3.2.5, Spring v6.1.6
+2026-03-04 20:42:10.456 [main] INFO  c.a.flight.demo.AuthServiceApplication - No active profile set, falling back to 1 default profile: "default"
+2026-03-04 20:42:29.063 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-04 20:42:29.972 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 860 ms. Found 2 JPA repository interfaces.
+2026-03-04 20:42:33.103 [main] INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=f30d67bf-589b-30fe-8282-db306de48a2b
+2026-03-04 20:42:39.031 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig' of type [org.springframework.cloud.client.loadbalancer.LoadBalancerAutoConfiguration$DeferringLoadBalancerInterceptorConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [lbRestClientPostProcessor] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-03-04 20:42:39.116 [main] WARN  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - Bean 'deferringLoadBalancerInterceptor' of type [org.springframework.cloud.client.loadbalancer.DeferringLoadBalancerInterceptor] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). Is this bean getting eagerly injected into a currently created BeanPostProcessor [lbRestClientPostProcessor]? Check the corresponding BeanPostProcessor declaration and its dependencies.
+2026-03-04 20:42:43.477 [main] INFO  o.s.b.w.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8081 (http)
+2026-03-04 20:42:43.543 [main] INFO  o.apache.catalina.core.StandardService - Starting service [Tomcat]
+2026-03-04 20:42:43.545 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-03-04 20:42:44.253 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-03-04 20:42:44.254 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 32865 ms
+2026-03-04 20:42:47.764 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-04 20:42:50.747 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:authdb user=SA
+2026-03-04 20:42:50.758 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-04 20:42:50.832 [main] INFO  o.s.b.a.h2.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:authdb'
+2026-03-04 20:42:54.241 [main] INFO  o.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-04 20:42:54.622 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-03-04 20:42:54.870 [main] INFO  o.h.c.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-03-04 20:42:56.551 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-04 20:42:56.754 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-04 20:43:01.394 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-04 20:43:01.939 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-04 20:43:06.903 [main] DEBUG c.a.flight.demo.filter.JwtAuthFilter - Filter 'jwtAuthFilter' configured for use
+2026-03-04 20:43:08.251 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-04 20:43:11.934 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-04 20:43:18.923 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 2 endpoint(s) beneath base path '/actuator'
+2026-03-04 20:43:20.116 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@72c8af69, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6d921d6b, org.springframework.security.web.context.SecurityContextHolderFilter@4d555b85, org.springframework.security.web.header.HeaderWriterFilter@f64ce35, org.springframework.web.filter.CorsFilter@59464f08, org.springframework.security.web.authentication.logout.LogoutFilter@7b9e4a2a, com.auth_service.flight.demo.filter.JwtAuthFilter@4ec28534, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@54ff871a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@16be2c40, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4d8af13c, org.springframework.security.web.session.SessionManagementFilter@283c6f00, org.springframework.security.web.access.ExceptionTranslationFilter@75b994f7, org.springframework.security.web.access.intercept.AuthorizationFilter@1a48f55b]
+2026-03-04 20:43:25.848 [main] INFO  o.s.c.n.e.c.DiscoveryClientOptionalArgsConfiguration - Eureka HTTP Client uses RestTemplate.
+2026-03-04 20:43:26.549 [main] WARN  o.s.c.l.c.LoadBalancerCacheAutoConfiguration$LoadBalancerCaffeineWarnLogger - Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-03-04 20:43:26.962 [main] INFO  o.s.c.netflix.eureka.InstanceInfoFactory - Setting initial instance status as: STARTING
+2026-03-04 20:43:27.275 [main] INFO  com.netflix.discovery.DiscoveryClient - Initializing Eureka in region us-east-1
+2026-03-04 20:43:27.292 [main] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 20:43:27.375 [main] INFO  com.netflix.discovery.DiscoveryClient - Disable delta property : false
+2026-03-04 20:43:27.376 [main] INFO  com.netflix.discovery.DiscoveryClient - Single vip registry refresh property : null
+2026-03-04 20:43:27.376 [main] INFO  com.netflix.discovery.DiscoveryClient - Force full registry fetch : false
+2026-03-04 20:43:27.377 [main] INFO  com.netflix.discovery.DiscoveryClient - Application is null : false
+2026-03-04 20:43:27.377 [main] INFO  com.netflix.discovery.DiscoveryClient - Registered Applications size is zero : true
+2026-03-04 20:43:27.378 [main] INFO  com.netflix.discovery.DiscoveryClient - Application version is -1: true
+2026-03-04 20:43:27.378 [main] INFO  com.netflix.discovery.DiscoveryClient - Getting all instance registry info from the eureka server
+2026-03-04 20:43:29.260 [main] INFO  com.netflix.discovery.DiscoveryClient - The response status is 200
+2026-03-04 20:43:29.268 [main] INFO  com.netflix.discovery.DiscoveryClient - Starting heartbeat executor: renew interval is: 30
+2026-03-04 20:43:29.279 [main] INFO  c.n.discovery.InstanceInfoReplicator - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2026-03-04 20:43:29.293 [main] INFO  com.netflix.discovery.DiscoveryClient - Discovery Client initialized at timestamp 1772637209290 with initial instances count: 1
+2026-03-04 20:43:29.310 [main] INFO  o.s.c.n.e.s.EurekaServiceRegistry - Registering application AUTH-SERVICE with eureka with status UP
+2026-03-04 20:43:29.311 [main] INFO  com.netflix.discovery.DiscoveryClient - Saw local status change event StatusChangeEvent [timestamp=1772637209311, current=UP, previous=STARTING]
+2026-03-04 20:43:29.316 [DiscoveryClient-InstanceInfoReplicator-0] INFO  com.netflix.discovery.DiscoveryClient - DiscoveryClient_AUTH-SERVICE/host.docker.internal:auth-service:8081: registering service...
+2026-03-04 20:43:29.380 [main] INFO  o.s.b.w.embedded.tomcat.TomcatWebServer - Tomcat started on port 8081 (http) with context path ''
+2026-03-04 20:43:29.383 [main] INFO  o.s.c.n.e.s.EurekaAutoServiceRegistration - Updating port to 8081
+2026-03-04 20:43:29.436 [DiscoveryClient-InstanceInfoReplicator-0] INFO  com.netflix.discovery.DiscoveryClient - DiscoveryClient_AUTH-SERVICE/host.docker.internal:auth-service:8081 - registration status: 204
+2026-03-04 20:43:30.256 [main] INFO  c.a.flight.demo.AuthServiceApplication - Started AuthServiceApplication in 90.543 seconds (process running for 98.238)
+2026-03-04 20:43:30.281 [main] INFO  c.a.flight.demo.config.DataSeeder - ========================================================
+2026-03-04 20:43:30.282 [main] INFO  c.a.flight.demo.config.DataSeeder -   Auth Service — Seeding default users...
+2026-03-04 20:43:30.283 [main] INFO  c.a.flight.demo.config.DataSeeder - ========================================================
+2026-03-04 20:43:31.080 [main] INFO  c.a.flight.demo.config.DataSeeder -   [OK]   'admin' (sivaprakashgorantla@gmail.com) created with role ADMIN.
+2026-03-04 20:43:31.304 [main] INFO  c.a.flight.demo.config.DataSeeder -   [OK]   'user' (sivaprakashgorantla1@gmail.com) created with role USER.
+2026-03-04 20:43:31.305 [main] INFO  c.a.flight.demo.config.DataSeeder - ========================================================
+2026-03-04 20:43:31.305 [main] INFO  c.a.flight.demo.config.DataSeeder -   Default credentials (change in production!)
+2026-03-04 20:43:31.305 [main] INFO  c.a.flight.demo.config.DataSeeder -   ADMIN → username: admin  email: sivaprakashgorantla@gmail.com  password: admin@123
+2026-03-04 20:43:31.306 [main] INFO  c.a.flight.demo.config.DataSeeder -   USER  → username: user   email: sivaprakashgorantla1@gmail.com  password: user@123
+2026-03-04 20:43:31.306 [main] INFO  c.a.flight.demo.config.DataSeeder - ========================================================
+2026-03-04 20:44:06.439 [http-nio-8081-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-04 20:44:06.440 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-03-04 20:44:06.447 [http-nio-8081-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+2026-03-04 20:44:07.385 [http-nio-8081-exec-1] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: user
+2026-03-04 20:44:07.386 [http-nio-8081-exec-1] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: user
+2026-03-04 20:44:08.376 [http-nio-8081-exec-1] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: user
+2026-03-04 20:44:09.663 [http-nio-8081-exec-1] INFO  c.a.flight.demo.service.AuthService - Login successful for user: user
+2026-03-04 20:44:09.664 [http-nio-8081-exec-1] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: user
+2026-03-04 20:45:55.147 [http-nio-8081-exec-5] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: user
+2026-03-04 20:45:55.317 [http-nio-8081-exec-5] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: user
+2026-03-04 20:45:55.326 [http-nio-8081-exec-5] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: user
+2026-03-04 20:45:57.910 [http-nio-8081-exec-5] INFO  c.a.flight.demo.service.AuthService - Login successful for user: user
+2026-03-04 20:45:57.912 [http-nio-8081-exec-5] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: user
+2026-03-04 20:46:32.186 [http-nio-8081-exec-8] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: user
+2026-03-04 20:46:32.188 [http-nio-8081-exec-8] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: user
+2026-03-04 20:46:32.193 [http-nio-8081-exec-8] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: user
+2026-03-04 20:46:32.435 [http-nio-8081-exec-8] INFO  c.a.flight.demo.service.AuthService - Login successful for user: user
+2026-03-04 20:46:32.435 [http-nio-8081-exec-8] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: user
+2026-03-04 20:47:28.984 [http-nio-8081-exec-5] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 20:47:28.984 [http-nio-8081-exec-5] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 20:47:28.985 [http-nio-8081-exec-5] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 20:47:29.238 [http-nio-8081-exec-5] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 20:47:29.238 [http-nio-8081-exec-5] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 20:48:27.384 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 20:53:27.409 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 20:55:38.913 [http-nio-8081-exec-5] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 20:55:38.913 [http-nio-8081-exec-5] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 20:55:38.914 [http-nio-8081-exec-5] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 20:55:39.927 [http-nio-8081-exec-5] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 20:55:39.929 [http-nio-8081-exec-5] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 20:55:45.708 [http-nio-8081-exec-6] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 20:55:45.708 [http-nio-8081-exec-6] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 20:55:45.708 [http-nio-8081-exec-6] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 20:55:45.890 [http-nio-8081-exec-6] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 20:55:45.890 [http-nio-8081-exec-6] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 20:55:47.372 [http-nio-8081-exec-8] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 20:55:47.373 [http-nio-8081-exec-8] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 20:55:47.373 [http-nio-8081-exec-8] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 20:55:47.603 [http-nio-8081-exec-8] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 20:55:47.604 [http-nio-8081-exec-8] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 20:56:16.677 [http-nio-8081-exec-7] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 20:56:16.678 [http-nio-8081-exec-7] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 20:56:16.679 [http-nio-8081-exec-7] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 20:56:16.857 [http-nio-8081-exec-7] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 20:56:16.858 [http-nio-8081-exec-7] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 20:56:46.999 [http-nio-8081-exec-10] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 20:56:46.999 [http-nio-8081-exec-10] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 20:56:46.999 [http-nio-8081-exec-10] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 20:56:47.211 [http-nio-8081-exec-10] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 20:56:47.212 [http-nio-8081-exec-10] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 20:58:27.421 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:03:27.429 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:08:27.434 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:13:27.451 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:18:27.465 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:23:27.481 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:28:27.497 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:33:27.512 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:38:27.528 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:43:27.544 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:48:27.559 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:53:27.575 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 21:58:27.590 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:03:27.622 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:08:27.638 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:10:39.253 [http-nio-8081-exec-9] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 22:10:39.271 [http-nio-8081-exec-9] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 22:10:39.273 [http-nio-8081-exec-9] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 22:10:39.592 [http-nio-8081-exec-9] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 22:10:39.594 [http-nio-8081-exec-9] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 22:11:52.986 [http-nio-8081-exec-2] INFO  c.a.f.demo.controller.AuthController - POST /auth/forgot-password - email: sivaprakashgornatla@gmail.com
+2026-03-04 22:11:52.986 [http-nio-8081-exec-2] INFO  c.a.flight.demo.service.AuthService - Forgot password request for email: sivaprakashgornatla@gmail.com
+2026-03-04 22:13:27.647 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:14:49.861 [http-nio-8081-exec-6] INFO  c.a.f.demo.controller.AuthController - POST /auth/forgot-password - email: sivaprakashgorantla@gmail.com
+2026-03-04 22:14:49.941 [http-nio-8081-exec-6] INFO  c.a.flight.demo.service.AuthService - Forgot password request for email: sivaprakashgorantla@gmail.com
+2026-03-04 22:14:50.182 [http-nio-8081-exec-6] INFO  c.a.flight.demo.service.AuthService - Password reset token issued for user: admin
+2026-03-04 22:14:55.858 [task-1] INFO  c.a.flight.demo.service.EmailService - Password reset email sent to: sivaprakashgorantla@gmail.com
+2026-03-04 22:18:27.654 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:20:11.702 [http-nio-8081-exec-10] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 22:20:11.703 [http-nio-8081-exec-10] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 22:20:11.703 [http-nio-8081-exec-10] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 22:20:11.918 [http-nio-8081-exec-10] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 22:20:11.919 [http-nio-8081-exec-10] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin

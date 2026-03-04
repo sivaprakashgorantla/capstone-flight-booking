@@ -834,3 +834,30 @@ com.netflix.discovery.shared.transport.TransportException: Cannot execute reques
 2026-03-04 22:21:17.440 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
 2026-03-04 22:26:17.446 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
 2026-03-04 22:31:17.452 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:36:17.466 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:41:17.503 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:46:17.698 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:51:17.728 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:56:17.738 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:01:17.752 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:06:18.315 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:11:18.375 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:16:18.386 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:21:18.396 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:26:18.401 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:31:18.404 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:36:18.417 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:41:19.429 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:46:19.445 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:51:19.449 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:56:19.502 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:58:33.357 [http-nio-8082-exec-6] DEBUG u.u.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 23:58:36.761 [http-nio-8082-exec-6] DEBUG u.user_service.service.JwtService - Token valid for user 'admin': true
+2026-03-04 23:58:36.775 [http-nio-8082-exec-6] DEBUG u.user_service.filter.JwtAuthFilter - Authenticated user 'admin' for URI: /users/profile
+2026-03-04 23:58:37.710 [http-nio-8082-exec-6] INFO  u.user_service.controller.UserController - GET /users/profile — user: admin
+2026-03-04 23:58:37.712 [http-nio-8082-exec-6] INFO  u.user_service.service.UserService - Fetching profile for user: admin
+2026-03-04 23:58:38.763 [http-nio-8082-exec-7] DEBUG u.u.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 23:58:39.233 [http-nio-8082-exec-7] DEBUG u.user_service.service.JwtService - Token valid for user 'admin': true
+2026-03-04 23:58:39.235 [http-nio-8082-exec-7] DEBUG u.user_service.filter.JwtAuthFilter - Authenticated user 'admin' for URI: /users/profile
+2026-03-04 23:58:39.428 [http-nio-8082-exec-7] INFO  u.user_service.controller.UserController - GET /users/profile — user: admin
+2026-03-04 23:58:39.431 [http-nio-8082-exec-7] INFO  u.user_service.service.UserService - Fetching profile for user: admin

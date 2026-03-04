@@ -12,6 +12,10 @@ spring:
           enabled: true
           lower-case-service-id: true
 
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 15s
+
       globalcors:
         cors-configurations:
           '[/**]':
@@ -128,29 +132,64 @@ management:
         include: health,info,prometheus
 
 resilience4j:
+  timelimiter:
+    instances:
+      userCircuitBreaker:
+        timeoutDuration: 15s
+      flightCircuitBreaker:
+        timeoutDuration: 15s
+      bookingCircuitBreaker:
+        timeoutDuration: 15s
+      paymentCircuitBreaker:
+        timeoutDuration: 15s
+      cancellationCircuitBreaker:
+        timeoutDuration: 15s
+      supportCircuitBreaker:
+        timeoutDuration: 15s
+      notificationCircuitBreaker:
+        timeoutDuration: 15s
+      analyticsCircuitBreaker:
+        timeoutDuration: 15s
+
   circuitbreaker:
     instances:
       userCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
       flightCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
       bookingCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
       paymentCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
       cancellationCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
       supportCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
       notificationCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
       analyticsCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3

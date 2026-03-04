@@ -4006,3 +4006,44 @@ com.netflix.discovery.shared.transport.TransportException: Cannot execute reques
 2026-03-04 22:32:23.607 [http-nio-8081-exec-2] INFO  c.a.flight.demo.service.AuthService - User registered: sivaprakash (sivaprakashgorantla2@gmail.com)
 2026-03-04 22:32:23.612 [http-nio-8081-exec-2] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: sivaprakash
 2026-03-04 22:32:28.515 [task-1] INFO  c.a.flight.demo.service.EmailService - Welcome email sent to: sivaprakashgorantla2@gmail.com
+2026-03-04 22:35:57.183 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:40:57.199 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:45:57.426 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:50:57.436 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:55:57.453 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 22:58:50.742 [http-nio-8081-exec-4] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: sivaprakash
+2026-03-04 22:58:50.743 [http-nio-8081-exec-4] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: sivaprakash
+2026-03-04 22:58:51.064 [http-nio-8081-exec-4] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: sivaprakash
+2026-03-04 22:58:51.496 [http-nio-8081-exec-4] WARN  c.a.f.d.exception.GlobalExceptionHandler - Authentication failed: Bad credentials
+2026-03-04 22:58:57.413 [http-nio-8081-exec-5] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 22:58:57.414 [http-nio-8081-exec-5] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 22:58:57.415 [http-nio-8081-exec-5] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 22:58:57.650 [http-nio-8081-exec-5] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 22:58:57.651 [http-nio-8081-exec-5] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 23:00:57.508 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:05:58.077 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:10:58.376 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:12:59.985 [http-nio-8081-exec-7] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 23:13:00.352 [http-nio-8081-exec-7] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 23:13:00.356 [http-nio-8081-exec-7] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 23:13:02.345 [http-nio-8081-exec-7] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 23:13:02.347 [http-nio-8081-exec-7] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 23:15:58.386 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:20:58.395 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:25:58.414 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:30:58.424 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:31:13.128 [http-nio-8081-exec-9] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 23:31:13.128 [http-nio-8081-exec-9] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 23:31:13.128 [http-nio-8081-exec-9] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 23:31:13.368 [http-nio-8081-exec-9] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 23:31:13.368 [http-nio-8081-exec-9] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin
+2026-03-04 23:35:58.571 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:40:58.823 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:45:58.832 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:50:58.847 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:55:58.861 [AsyncResolver-bootstrap-executor-0] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2026-03-04 23:58:03.147 [http-nio-8081-exec-1] INFO  c.a.f.demo.controller.AuthController - POST /auth/login - username: admin
+2026-03-04 23:58:03.148 [http-nio-8081-exec-1] INFO  c.a.flight.demo.service.AuthService - Login attempt for user: admin
+2026-03-04 23:58:03.149 [http-nio-8081-exec-1] DEBUG c.a.f.d.service.UserDetailsServiceImpl - Loading user by username: admin
+2026-03-04 23:58:03.387 [http-nio-8081-exec-1] INFO  c.a.flight.demo.service.AuthService - Login successful for user: admin
+2026-03-04 23:58:03.388 [http-nio-8081-exec-1] DEBUG c.a.flight.demo.service.JwtService - Generating JWT token for user: admin

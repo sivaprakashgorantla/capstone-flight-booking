@@ -1,0 +1,33 @@
+API Endpoints
+Method	Path	Auth	Description
+GET	/flights/health	Public	Health check
+GET	/flights/search?departureCity=&destinationCity=&travelDate=&passengers=	Guest OK	Search available flights
+GET	/flights/{id}	Public	Get flight details
+GET	/flights	ADMIN	List all flights
+POST	/flights	ADMIN	Create flight
+PATCH	/flights/{id}/status?status=DELAYED	ADMIN	Update flight status
+DELETE	/flights/{id}	ADMIN	Delete flight
+Sample Search (guest — no JWT needed)
+GET http://localhost:8083/flights/search?departureCity=Delhi&destinationCity=Mumbai&travelDate=2026-03-10&passengers=1
+
+Startup Order
+Eureka (8761) → auth-service (8081) → user-service (8082) → flight-service (8083) → api-gateway (8080)
+
+Swagger UI
+http://localhost:8083/swagger-ui.html
+
+# Search 5 flights (Delhi → Mumbai, 2026-03-10)
+GET http://localhost:8083/flights/search?departureCity=Delhi&destinationCity=Mumbai&travelDate=2026-03-10&passengers=1
+
+# Search Mumbai → Delhi
+GET http://localhost:8083/flights/search?departureCity=Mumbai&destinationCity=Delhi&travelDate=2026-03-10&passengers=2
+
+# Next day flights
+GET http://localhost:8083/flights/search?departureCity=Delhi&destinationCity=Mumbai&travelDate=2026-03-11&passengers=1
+
+# DELAYED flight NOT in search results (status filter)
+GET http://localhost:8083/flights/search?departureCity=Delhi&destinationCity=Chennai&travelDate=2026-03-10&passengers=1
+# → returns 2 SCHEDULED flights (AI-902, 6E-902); AI-901 (DELAYED) excluded ✓
+
+# Admin: view ALL flights including DELAYED/CANCELLED
+GET http://localhost:8083/flights  (requires ADMIN JWT)

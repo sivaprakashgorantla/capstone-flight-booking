@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="manage-bookings-service" />
+        <module name="auth-service" />
+        <module name="payment-service" />
+        <module name="analytics-reporting-service" />
+        <module name="cancellation-service" />
+        <module name="support-service" />
+        <module name="booking-service" />
+        <module name="api-gateway" />
+        <module name="user-service" />
+        <module name="eureka-server" />
+        <module name="flight-service" />
+        <module name="notification-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="analytics-reporting-service" options="-parameters" />
+      <module name="api-gateway" options="-parameters" />
+      <module name="auth-service" options="-parameters" />
+      <module name="booking-service" options="-parameters" />
+      <module name="cancellation-service" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
+      <module name="flight-service" options="-parameters" />
+      <module name="manage-bookings-service" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
+      <module name="payment-service" options="-parameters" />
+      <module name="support-service" options="-parameters" />
+      <module name="user-service" options="-parameters" />
+    </option>
+  </component>
+</project>

@@ -1,0 +1,58 @@
+cancellation-service/
+├── pom.xml                             ← Fixed: parent pom, JAR, all deps, port 8086
+├── src/main/resources/application.properties
+└── src/main/java/com/flight/cancellation_service/
+    ├── CancellationServiceApplication.java
+    ├── model/
+    │   ├── Cancellation.java           ← JPA entity (CAN-XXXXXXXX reference)
+    │   └── CancellationStatus.java     ← PENDING, APPROVED, REFUNDED, NO_REFUND, REJECTED
+    ├── repository/
+    │   └── CancellationRepository.java
+    ├── dto/
+    │   ├── ApiResponse.java
+    │   ├── InitiateCancellationRequest.java
+    │   ├── BookingDetailsDTO.java       ← mirrors booking-service BookingResponse
+    │   └── CancellationResponse.java
+    ├── exception/
+    │   ├── BadRequestException.java
+    │   ├── CancellationNotFoundException.java
+    │   └── GlobalExceptionHandler.java
+    ├── service/
+    │   ├── JwtService.java
+    │   ├── UserDetailsServiceImpl.java
+    │   ├── BookingServiceClient.java   ← calls booking-service internal endpoints
+    │   ├── RefundService.java          ← eligibility check + refund calculation + gateway
+    │   ├── NotificationService.java    ← mock email (logged to console)
+    │   └── CancellationService.java    ← full UC6 orchestration
+    ├── filter/JwtAuthFilter.java
+    ├── config/
+    │   ├── AppConfig.java              ← @LoadBalanced RestTemplate
+    │   ├── SecurityConfig.java
+    │   └── SwaggerConfig.java
+    └── controller/CancellationController.java
+
+Files Updated in Existing Services
+File	Change
+booking-service/SecurityConfig.java	Added permitAll for GET /bookings/internal/** and PATCH /bookings/internal/cancel/**
+booking-service/BookingService.java	Added getBookingByIdInternal() + cancelBookingInternal()
+booking-service/BookingController.java	Added GET /bookings/internal/{id} + PATCH /bookings/internal/cancel/{id}
+api-gateway/application.yml	Added cancellation-service route + circuit breaker
+pom.xml (parent)	Added <module>cancellation-service</module>
+Refund Policy (time before departure)
+Hours Before Departure	Refund %
+> 48 hours	90%
+24 – 48 hours	75%
+12 – 24 hours	50%
+6 – 12 hours	25%
+< 6 hours	0% (No refund, but still cancelled)
+Already departed	REJECTED (cannot cancel)
+PENDING_PAYMENT	Free cancel (no payment was collected)
+API Endpoints (port 8086 / via gateway localhost:8080)
+POST  /cancellations/initiate           → UC6 Steps 1-5 (full workflow)
+GET   /cancellations/my                 → User's cancellation history
+GET   /cancellations/{id}               → By ID
+GET   /cancellations/reference/{ref}    → By CAN-XXXXXXXX
+GET   /cancellations/booking/{bookingId}→ By booking ID
+GET   /cancellations          (ADMIN)   → All records
+GET   /cancellations/health             → Health check
+

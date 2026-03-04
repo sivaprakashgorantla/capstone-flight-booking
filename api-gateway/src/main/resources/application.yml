@@ -1,0 +1,147 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: API-GATEWAY
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      routes:
+
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1
+
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: userCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: flight-service
+          uri: lb://FLIGHT-SERVICE
+          predicates:
+            - Path=/flights/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: flightCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: booking-service
+          uri: lb://BOOKING-SERVICE
+          predicates:
+            - Path=/bookings/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: bookingCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: paymentCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: cancellation-service
+          uri: lb://CANCELLATION-SERVICE
+          predicates:
+            - Path=/cancellations/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: cancellationCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: support-service
+          uri: lb://SUPPORT-SERVICE
+          predicates:
+            - Path=/support/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: supportCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/notifications/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: notificationCircuitBreaker
+                fallbackUri: forward:/fallback
+
+        - id: analytics-reporting-service
+          uri: lb://ANALYTICS-REPORTING-SERVICE
+          predicates:
+            - Path=/reports/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: analyticsCircuitBreaker
+                fallbackUri: forward:/fallback
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+      flightCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+      bookingCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+      paymentCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+      cancellationCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+      supportCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+      notificationCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+      analyticsCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50

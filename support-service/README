@@ -1,0 +1,9 @@
+POST /support → ticket created with auto-assigned agent & priority by category
+Ticket saved with TKT-XXXXXXXX reference
+Agent notified (mock log) → status IN_PROGRESS
+User acknowledgement sent (mock log) with ticket reference
+Admin manages via /support/admin/** endpoints
+🌐 API Gateway
+Route: Path=/support/** → lb://SUPPORT-SERVICE
+Circuit breaker: supportCircuitBreaker
+Swagger: http://localhost:8087/swagger-ui.html or via gateway at http://localhost:8080/support/swagger-ui.html

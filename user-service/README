@@ -1,0 +1,18 @@
+Endpoints
+Method	Path	Auth	Description
+GET	/users/health	Public	Health check
+GET	/users/profile	User	Get my profile
+PUT	/users/profile	User	Update firstName/lastName/email/phone
+PATCH	/users/change-password	User	Verify current → set new password
+PATCH	/users/deactivate	User	Soft-deactivate my account
+GET	/users	ADMIN	List all users
+GET	/users/{id}	ADMIN	Get user by ID
+PATCH	/users/{id}/role	ADMIN	Assign USER/ADMIN role
+PATCH	/users/{id}/activate	ADMIN	Re-activate a deactivated account
+URLs when running
+Swagger UI → http://localhost:8082/swagger-ui.html
+Via Gateway → http://localhost:8080/users/**
+H2 Console → http://localhost:8082/h2-console
+Startup Flow
+
+Eureka (8761) → auth-service (8081) → user-service (8082) → api-gateway (8080)

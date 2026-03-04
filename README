@@ -1,0 +1,71 @@
+Service	Port	Swagger
+Eureka Server	8761	—
+API Gateway	8080	—
+Auth Service	8081	:8081/swagger-ui.html
+User Service	8082	:8082/swagger-ui.html
+Flight Service	8083	:8083/swagger-ui.html
+Booking Service	8084	:8084/swagger-ui.html
+Payment Service	8085	:8085/swagger-ui.html
+Cancellation Service	8086	:8086/swagger-ui.html
+Support Service	8087	:8087/swagger-ui.html
+Notification Service	8088	:8088/swagger-ui.html
+Analytics/Reporting	8089	:8089/swagger-ui.html
+
+
+
+✅ Flight Booking — Complete (Use Case 2)
+Architecture & Ports
+Eureka (8761) → auth-service (8081) → user-service (8082)
+             → flight-service (8083) → booking-service (8084) → payment-service (8085)
+             → api-gateway (8080)
+
+Booking Workflow (End-to-End)
+Step 1  POST /auth/login              → Get JWT token
+        ─────────────────────────────────────────────────────────
+Step 2  GET  /flights/search          → Find available flight (get flightId)
+        ─────────────────────────────────────────────────────────
+Step 3  POST /bookings                → Create booking with passenger details
+        Body: { flightId, passengers: [{firstName, lastName, email, phone, age, gender}] }
+        ← Returns: bookingReference (BKG-XXXXXXXX), assigned seats, status=PENDING_PAYMENT
+        ─────────────────────────────────────────────────────────
+Step 4  POST /payments/initiate       → Process payment
+        Body: { bookingId, bookingReference, paymentMethod: UPI|CREDIT_CARD|DEBIT_CARD|NET_BANKING }
+        ← Returns: paymentReference (PAY-XXXXXXXX), transactionId, status=SUCCESS/FAILED
+        ─────────────────────────────────────────────────────────
+Step 5  [AUTO] payment-service → booking-service (internal PATCH /bookings/internal/confirm)
+        ← booking status: PENDING_PAYMENT → CONFIRMED
+        ─────────────────────────────────────────────────────────
+Step 6  [AUTO] EmailService logs confirmation email with passenger + seat details
+
+API Endpoints
+Booking Service (8084)
+Method	Path	Auth	Description
+GET	/bookings/health	Public	Health check
+POST	/bookings	JWT	Step 1 — Create booking
+GET	/bookings/my	JWT	My bookings
+GET	/bookings/{id}	JWT	Get by ID
+GET	/bookings/reference/{ref}	JWT	Get by reference
+POST	/bookings/{id}/cancel	JWT	Cancel PENDING booking
+GET	/bookings	ADMIN	All bookings
+PATCH	/bookings/internal/confirm	X-Service-Key	Payment callback
+Payment Service (8085)
+Method	Path	Auth	Description
+GET	/payments/health	Public	Health check
+POST	/payments/initiate	JWT	Step 2 — Process payment
+GET	/payments/my	JWT	My payments
+GET	/payments/{id}	JWT	Get by ID
+GET	/payments/reference/{ref}	JWT	Get by reference
+GET	/payments/booking/{bookingId}	JWT	Get by booking
+GET	/payments	ADMIN	All payments
+Key Design Decisions
+Feature	Implementation
+Seat assignment	Auto-assigned (1A→50F), tracks taken seats across active bookings
+Booking reference	BKG- + 8 random alphanumeric chars, collision-safe recursive check
+Payment reference	PAY- + 8 random alphanumeric chars
+Transaction ID	TXN- + timestamp (simulated gateway)
+Payment success rates	CREDIT_CARD 92%, UPI 90%, DEBIT_CARD 88%, NET_BANKING 82%
+Test failure	simulateFailure: true in payload forces payment failure
+Inter-service call	@LoadBalanced RestTemplate → http://BOOKING-SERVICE/bookings/internal/confirm
+Service key guard	X-Service-Key: poc-internal-svc-key-2026 protects internal endpoint
+Email	Mock EmailService logs formatted email (no SMTP dependency)
+Swagger UI	http://localhost:8084/swagger-ui.html & http://localhost:8085/swagger-ui.html

@@ -1,0 +1,11 @@
+Method	Path	Auth	Description
+POST	/auth/register	Public	Create user, returns JWT
+POST	/auth/login	Public	Authenticate, returns JWT
+GET	/auth/validate?token=...	Public	Token introspection (for API Gateway)
+GET	/auth/health	Public	Health check
+
+
+URLs when running
+Swagger UI: http://localhost:8081/swagger-ui.html
+API Docs: http://localhost:8081/v3/api-docs
+H2 Console: http://localhost:8081/h2-console

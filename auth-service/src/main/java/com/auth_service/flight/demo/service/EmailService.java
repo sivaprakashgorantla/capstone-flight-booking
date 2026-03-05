@@ -3,68 +3,82 @@ package com.auth_service.flight.demo.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
+/**
+ * Auth-service email client.
+ *
+ * All actual SMTP logic now lives in the dedicated email-service (port 8086).
+ * This class delegates via @LoadBalanced RestTemplate → lb://EMAIL-SERVICE.
+ * Calls are @Async so they never block the HTTP response.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private final RestTemplate restTemplate; // @LoadBalanced bean from AppConfig
 
-    @Value("${spring.mail.username}")
-    private String fromAddress;
+    @Value("${email.service.url:http://EMAIL-SERVICE}")
+    private String emailServiceUrl;
 
-    @Value("${app.reset-password.url:http://localhost:3000/reset-password}")
-    private String resetPasswordBaseUrl;
+    @Value("${internal.service.key}")
+    private String serviceKey;
+
+    // ── Welcome Email ─────────────────────────────────────────────────────────
 
     @Async
     public void sendWelcomeEmail(String toEmail, String username) {
+        String url = emailServiceUrl + "/email/welcome";
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(fromAddress);
-            message.setTo(toEmail);
-            message.setSubject("Welcome to SkyBook ✈ — Registration Successful");
-            message.setText(
-                    "Hi " + username + ",\n\n" +
-                    "Welcome aboard! Your SkyBook account has been created successfully.\n\n" +
-                    "You can now log in and start searching for flights:\n" +
-                    "http://localhost:3000/login\n\n" +
-                    "Account Details:\n" +
-                    "  Username : " + username + "\n" +
-                    "  Email    : " + toEmail + "\n\n" +
-                    "If you did not create this account, please contact our support team immediately.\n\n" +
-                    "Happy travels!\n" +
-                    "— The SkyBook Team"
+            HttpHeaders headers = buildHeaders();
+            Map<String, String> body = Map.of(
+                    "toEmail",  toEmail,
+                    "username", username
             );
-            mailSender.send(message);
-            log.info("Welcome email sent to: {}", toEmail);
+            ResponseEntity<String> response =
+                    restTemplate.postForEntity(url, new HttpEntity<>(body, headers), String.class);
+            log.info("Welcome email delegated to email-service — to={}, status={}",
+                    toEmail, response.getStatusCode());
         } catch (Exception e) {
-            log.error("Failed to send welcome email to {}: {}", toEmail, e.getMessage());
+            log.error("Failed to delegate welcome email to email-service for {}: {}",
+                    toEmail, e.getMessage());
         }
     }
 
+    // ── Password Reset Email ──────────────────────────────────────────────────
+
     @Async
     public void sendPasswordResetEmail(String toEmail, String username, String token) {
-        String resetLink = resetPasswordBaseUrl + "?token=" + token;
+        String url = emailServiceUrl + "/email/password-reset";
+        try {
+            HttpHeaders headers = buildHeaders();
+            Map<String, String> body = Map.of(
+                    "toEmail",    toEmail,
+                    "username",   username,
+                    "resetToken", token
+            );
+            ResponseEntity<String> response =
+                    restTemplate.postForEntity(url, new HttpEntity<>(body, headers), String.class);
+            log.info("Password reset email delegated to email-service — to={}, status={}",
+                    toEmail, response.getStatusCode());
+        } catch (Exception e) {
+            log.error("Failed to delegate password reset email to email-service for {}: {}",
+                    toEmail, e.getMessage());
+        }
+    }
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(fromAddress);
-        message.setTo(toEmail);
-        message.setSubject("SkyBook — Password Reset Request");
-        message.setText(
-                "Hi " + username + ",\n\n" +
-                "We received a request to reset your SkyBook account password.\n\n" +
-                "Click the link below to reset your password (valid for 30 minutes):\n\n" +
-                resetLink + "\n\n" +
-                "If you did not request this, please ignore this email.\n\n" +
-                "— The SkyBook Team"
-        );
+    // ── Helper ────────────────────────────────────────────────────────────────
 
-        mailSender.send(message);
-        log.info("Password reset email sent to: {}", toEmail);
+    private HttpHeaders buildHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Service-Key", serviceKey);
+        return headers;
     }
 }

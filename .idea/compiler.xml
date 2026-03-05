@@ -7,18 +7,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="manage-bookings-service" />
-        <module name="auth-service" />
-        <module name="payment-service" />
         <module name="analytics-reporting-service" />
-        <module name="cancellation-service" />
         <module name="support-service" />
-        <module name="booking-service" />
-        <module name="api-gateway" />
         <module name="user-service" />
         <module name="eureka-server" />
         <module name="flight-service" />
         <module name="notification-service" />
+        <module name="manage-bookings-service" />
+        <module name="auth-service" />
+        <module name="payment-service" />
+        <module name="cancellation-service" />
+        <module name="booking-service" />
+        <module name="email-service" />
+        <module name="api-gateway" />
       </profile>
     </annotationProcessing>
   </component>
@@ -29,6 +30,7 @@
       <module name="auth-service" options="-parameters" />
       <module name="booking-service" options="-parameters" />
       <module name="cancellation-service" options="-parameters" />
+      <module name="email-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="flight-service" options="-parameters" />
       <module name="manage-bookings-service" options="-parameters" />

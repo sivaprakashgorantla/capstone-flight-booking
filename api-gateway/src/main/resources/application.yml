@@ -63,7 +63,7 @@ spring:
         - id: booking-service
           uri: lb://BOOKING-SERVICE
           predicates:
-            - Path=/bookings/**
+            - Path=/bookings, /bookings/**
           filters:
             - name: CircuitBreaker
               args:
@@ -73,7 +73,7 @@ spring:
         - id: payment-service
           uri: lb://PAYMENT-SERVICE
           predicates:
-            - Path=/payments/**
+            - Path=/payments, /payments/**
           filters:
             - name: CircuitBreaker
               args:

@@ -1,0 +1,22 @@
+Complete UC4 → Payment Flow (now working)
+MyBookings (/my-bookings)
+    │
+    ▼ "View Details →"
+BookingDetail (/booking/:id)
+    │  GET /bookings/{id}  →  booking has status=PENDING_PAYMENT
+    │
+    ▼ "💳 Complete Payment" button
+    │  Builds flightFromBooking { airline, flightNumber, ... } from booking fields
+    │
+PaymentPage (/payment)
+    │  ✅ booking exists  ✅ flight exists  → page renders correctly
+    │  Shows: booking reference, airline, route, passengers, total
+    │  User picks payment method → clicks Pay
+    │
+    ▼ POST /payments/initiate
+    │
+BookingConfirmation (/booking-confirmation)
+    │  ✅ payment + booking + flight all passed in state
+    │  Shows: success banner, booking ref, flight details, payment summary
+    │
+    ▼ "📋 My Bookings" → booking now shows CONFIRMED

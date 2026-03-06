@@ -35,13 +35,29 @@ public class JwtService {
                 .getPayload();
     }
 
+    /** Returns JWT subject — which is the username (e.g. "admin"). */
     public String extractUsername(String token) {
         return extractAllClaims(token).getSubject();
     }
 
+    /**
+     * Returns the user's actual email address from the "email" claim
+     * (added by auth-service since the fix). Falls back to subject if absent.
+     */
+    public String extractEmail(String token) {
+        Claims claims = extractAllClaims(token);
+        Object email = claims.get("email");
+        return (email != null && !email.toString().isBlank())
+                ? email.toString()
+                : extractAllClaims(token).getSubject();
+    }
+
+    /**
+     * Extracts the role string. auth-service now sets "role" (singular) = "ADMIN"/"USER".
+     * Falls back to "roles" list if "role" is absent (old tokens).
+     */
     public String extractRole(String token) {
         Claims claims = extractAllClaims(token);
-        // Support both "role" and "roles" claim keys used by auth-service
         Object role = claims.get("role");
         if (role == null) {
             role = claims.get("roles");
@@ -49,6 +65,7 @@ public class JwtService {
         return role != null ? role.toString() : "ROLE_USER";
     }
 
+    /** Returns userId from the "userId" claim; falls back to username if absent. */
     public String extractUserId(String token) {
         Claims claims = extractAllClaims(token);
         Object userId = claims.get("userId");

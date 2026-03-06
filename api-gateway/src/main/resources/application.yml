@@ -93,7 +93,7 @@ spring:
         - id: support-service
           uri: lb://SUPPORT-SERVICE
           predicates:
-            - Path=/support/**
+            - Path=/support, /support/**
           filters:
             - name: CircuitBreaker
               args:

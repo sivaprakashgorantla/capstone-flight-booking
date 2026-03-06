@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -61,7 +62,7 @@ public class AuthService {
 
         emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
 
-        return buildResponse(jwtService.generateToken(user), user);
+        return buildResponse(jwtService.generateToken(buildClaims(user), user), user);
     }
 
     // ─── Login ─────────────────────────────────────────────────────────────────
@@ -77,7 +78,7 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         log.info("Login successful for user: {}", user.getUsername());
-        return buildResponse(jwtService.generateToken(user), user);
+        return buildResponse(jwtService.generateToken(buildClaims(user), user), user);
     }
 
     // ─── Validate ──────────────────────────────────────────────────────────────
@@ -152,7 +153,19 @@ public class AuthService {
         log.info("Password successfully reset for user: {}", user.getUsername());
     }
 
-    // ─── Helper ────────────────────────────────────────────────────────────────
+    // ─── Helpers ───────────────────────────────────────────────────────────────
+
+    /**
+     * Builds extra JWT claims so every downstream microservice can read
+     * userId, email and role directly from the token without calling auth-service.
+     */
+    private Map<String, Object> buildClaims(User user) {
+        return Map.of(
+                "userId", user.getId() != null ? user.getId().toString() : "",
+                "email",  user.getEmail(),
+                "role",   user.getRole().name()          // singular "role" — e.g. "ADMIN", "USER"
+        );
+    }
 
     private AuthResponse buildResponse(String token, User user) {
         return AuthResponse.builder()

@@ -301,13 +301,14 @@ public class SupportController {
 
     /**
      * Returns [userId, userEmail].
-     * userId  → from "userId" claim (falls back to username/email)
-     * userEmail → uses username claim (which auth-service sets to email)
+     * userId    → from "userId" claim (auth-service sets this since the JWT fix)
+     * userEmail → from "email"  claim (auth-service sets this since the JWT fix)
+     * Both fall back gracefully to the sub (username) if the claim is absent.
      */
     private String[] extractUserInfo(HttpServletRequest request) {
         String token     = extractToken(request);
         String userId    = jwtService.extractUserId(token);
-        String userEmail = jwtService.extractUsername(token);  // auth-service sets sub=email
+        String userEmail = jwtService.extractEmail(token);   // "email" claim, not sub
         return new String[]{ userId, userEmail };
     }
 }

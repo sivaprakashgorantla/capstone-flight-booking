@@ -1,116 +1,122 @@
 package com.flight.support_service.service;
 
 import com.flight.support_service.model.SupportTicket;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.Map;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
 
-    // ── UC8 Step 4: User receives acknowledgement ─────────────────────────────
+    private final RestTemplate restTemplate;
 
-    /**
-     * Sends ticket creation acknowledgement to the user (UC8 – Step 4).
-     */
+    @Value("${email.service.url}")
+    private String emailServiceUrl;
+
+    @Value("${internal.service.key}")
+    private String internalServiceKey;
+
+    // ── UC8 Step 4: User acknowledgement email ────────────────────────────────
+
+    @Async
     public void sendTicketAcknowledgement(SupportTicket ticket) {
         log.info("""
-                ╔══════════════════════════════════════════════════════════════╗
-                ║              SUPPORT TICKET ACKNOWLEDGEMENT                  ║
-                ╠══════════════════════════════════════════════════════════════╣
-                ║  To      : {}
-                ║  Subject : Your ticket #{} has been received
-                ║  ────────────────────────────────────────────────────────── ║
-                ║  Dear Customer,                                              ║
-                ║                                                              ║
-                ║  We have received your support request and assigned it       ║
-                ║  ticket reference: {}
-                ║                                                              ║
-                ║  Category  : {}
-                ║  Priority  : {}
-                ║  Assigned  : {}
-                ║                                                              ║
-                ║  Our support team will respond within 24–48 hours.          ║
-                ║  Track your ticket at: /support/reference/{}
-                ╚══════════════════════════════════════════════════════════════╝
+                [UC8-NOTIFY] TICKET ACKNOWLEDGEMENT
+                  To      : {}
+                  Ref     : {}   Priority: {}
+                  Assigned: {}
                 """,
                 ticket.getUserEmail(),
-                ticket.getId(),
                 ticket.getTicketReference(),
-                ticket.getCategory(),
                 ticket.getPriority(),
-                ticket.getAssignedTo() != null ? ticket.getAssignedTo() : "Pending Assignment",
-                ticket.getTicketReference()
+                ticket.getAssignedTo()
         );
+        try {
+            Map<String, String> body = Map.of(
+                    "toEmail",         ticket.getUserEmail(),
+                    "ticketReference", ticket.getTicketReference(),
+                    "category",        ticket.getCategory() != null ? ticket.getCategory().name() : "GENERAL_ENQUIRY",
+                    "priority",        ticket.getPriority() != null ? ticket.getPriority().name() : "MEDIUM",
+                    "assignedTo",      ticket.getAssignedTo() != null ? ticket.getAssignedTo() : "support-team",
+                    "subject",         ticket.getSubject()
+            );
+            restTemplate.postForEntity(
+                    emailServiceUrl + "/email/support-ack",
+                    new HttpEntity<>(body, buildHeaders()),
+                    String.class
+            );
+            log.info("[UC8-NOTIFY] Acknowledgement email dispatched: ref={}", ticket.getTicketReference());
+        } catch (Exception e) {
+            log.warn("[UC8-NOTIFY] Could not dispatch acknowledgement email: ref={} error={}",
+                    ticket.getTicketReference(), e.getMessage());
+        }
     }
 
-    /**
-     * Notifies agent of new ticket assignment (UC8 – Step 3).
-     */
+    // ── UC8 Step 3: Agent assignment notification ─────────────────────────────
+
+    @Async
     public void sendAgentAssignmentNotification(SupportTicket ticket) {
         log.info("""
-                ╔══════════════════════════════════════════════════════════════╗
-                ║                AGENT ASSIGNMENT NOTIFICATION                 ║
-                ╠══════════════════════════════════════════════════════════════╣
-                ║  To      : {}@support.flightapp.com
-                ║  Subject : New ticket assigned – {}
-                ║  ────────────────────────────────────────────────────────── ║
-                ║  Ticket Ref : {}
-                ║  Category   : {}
-                ║  Priority   : {}
-                ║  Subject    : {}
-                ║  Customer   : {}
-                ╚══════════════════════════════════════════════════════════════╝
+                [UC8-NOTIFY] AGENT ASSIGNMENT
+                  Agent   : {}@support.skybook.com
+                  Ticket  : {}   Priority: {}
+                  Category: {}   Customer: {}
                 """,
                 ticket.getAssignedTo(),
                 ticket.getTicketReference(),
-                ticket.getTicketReference(),
-                ticket.getCategory(),
                 ticket.getPriority(),
-                ticket.getSubject(),
+                ticket.getCategory(),
                 ticket.getUserEmail()
         );
     }
 
-    /**
-     * Notifies user that their ticket has been resolved.
-     */
+    // ── Resolution notification ───────────────────────────────────────────────
+
+    @Async
     public void sendResolutionNotification(SupportTicket ticket) {
-        log.info("""
-                ╔══════════════════════════════════════════════════════════════╗
-                ║                  TICKET RESOLVED NOTIFICATION                ║
-                ╠══════════════════════════════════════════════════════════════╣
-                ║  To      : {}
-                ║  Subject : Your ticket {} has been resolved
-                ║  ────────────────────────────────────────────────────────── ║
-                ║  Resolution: {}
-                ║                                                              ║
-                ║  Please reply to reopen if you need further assistance.      ║
-                ╚══════════════════════════════════════════════════════════════╝
-                """,
-                ticket.getUserEmail(),
-                ticket.getTicketReference(),
-                ticket.getResolution()
-        );
+        log.info("[UC8-NOTIFY] TICKET RESOLVED: ref={} to={}", ticket.getTicketReference(), ticket.getUserEmail());
+        try {
+            Map<String, String> body = Map.of(
+                    "toEmail",         ticket.getUserEmail(),
+                    "ticketReference", ticket.getTicketReference(),
+                    "resolution",      ticket.getResolution() != null ? ticket.getResolution() : ""
+            );
+            restTemplate.postForEntity(
+                    emailServiceUrl + "/email/support-resolved",
+                    new HttpEntity<>(body, buildHeaders()),
+                    String.class
+            );
+            log.info("[UC8-NOTIFY] Resolution email dispatched: ref={}", ticket.getTicketReference());
+        } catch (Exception e) {
+            log.warn("[UC8-NOTIFY] Could not dispatch resolution email: ref={} error={}",
+                    ticket.getTicketReference(), e.getMessage());
+        }
     }
 
-    /**
-     * Notifies user that their ticket status has been updated.
-     */
+    // ── Status update notification ────────────────────────────────────────────
+
+    @Async
     public void sendStatusUpdateNotification(SupportTicket ticket) {
-        log.info("""
-                ╔══════════════════════════════════════════════════════════════╗
-                ║               TICKET STATUS UPDATE NOTIFICATION              ║
-                ╠══════════════════════════════════════════════════════════════╣
-                ║  To      : {}
-                ║  Ticket  : {}
-                ║  Status  : {} → {}
-                ╚══════════════════════════════════════════════════════════════╝
-                """,
-                ticket.getUserEmail(),
-                ticket.getTicketReference(),
-                "UPDATED",
-                ticket.getStatus()
-        );
+        log.info("[UC8-NOTIFY] STATUS UPDATE: ref={} status={} to={}",
+                ticket.getTicketReference(), ticket.getStatus(), ticket.getUserEmail());
+    }
+
+    // ── private helpers ───────────────────────────────────────────────────────
+
+    private HttpHeaders buildHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Service-Key", internalServiceKey);
+        return headers;
     }
 }

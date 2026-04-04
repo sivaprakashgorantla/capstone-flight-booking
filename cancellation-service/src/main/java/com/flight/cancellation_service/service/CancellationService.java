@@ -6,6 +6,8 @@ import com.flight.cancellation_service.exception.CancellationNotFoundException;
 import com.flight.cancellation_service.model.Cancellation;
 import com.flight.cancellation_service.model.CancellationStatus;
 import com.flight.cancellation_service.repository.CancellationRepository;
+import com.flight.cancellation_service.saga.CancellationSagaOrchestrator;
+import org.springframework.security.access.AccessDeniedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ public class CancellationService {
     private final BookingServiceClient bookingServiceClient;
     private final RefundService refundService;
     private final NotificationService notificationService;
+    private final CancellationSagaOrchestrator sagaOrchestrator;
 
     // ══════════════════════════════════════════════════════════════════════════
     // UC6 Step 1-5: Initiate cancellation — full workflow
@@ -54,19 +57,26 @@ public class CancellationService {
 
         // Ownership check
         if (!booking.getUserId().equals(username)) {
-            throw new BadRequestException(
+            throw new AccessDeniedException(
                     "Access denied — booking does not belong to user: " + username);
         }
 
         String bookingStatus = booking.getStatus();
         String canRef        = generateCancellationReference();
 
+        // SAGA CANCEL-STEP-1 — initiation logged
+        sagaOrchestrator.onCancellationInitiated(
+                booking.getBookingReference(), canRef, bookingStatus);
+
         // ── Step 2: Verify eligibility ────────────────────────────────────────
         // Case A: Already cancelled / payment failed
         if ("CANCELLED".equals(bookingStatus) || "PAYMENT_FAILED".equals(bookingStatus)) {
-            Cancellation rejected = buildRejected(canRef, booking, request.getReason(),
-                    "Booking is already in " + bookingStatus + " status.");
+            String rejectReason = "Booking is already in " + bookingStatus + " status.";
+            Cancellation rejected = buildRejected(canRef, booking, request.getReason(), rejectReason);
             Cancellation saved = cancellationRepository.save(rejected);
+            // SAGA CANCEL-STEP-2 REJECTED
+            sagaOrchestrator.onCancellationRejected(
+                    booking.getBookingReference(), canRef, rejectReason);
             notificationService.sendRejectionNotification(
                     booking.getUserEmail(), username,
                     booking.getBookingReference(), rejected.getCancellationReason());
@@ -119,6 +129,9 @@ public class CancellationService {
         // Step 3: Cancel booking in booking-service
         bookingServiceClient.cancelBooking(booking.getId());
 
+        // SAGA CANCEL-FREE
+        sagaOrchestrator.onFreeCancellation(booking.getBookingReference(), canRef);
+
         // Step 5: Confirmation email
         notificationService.sendNoRefundNotification(saved,
                 "Booking was in PENDING_PAYMENT — no payment was collected.");
@@ -136,9 +149,12 @@ public class CancellationService {
 
         // Step 2: Check if already departed
         if (departureTime != null && refundService.isFlightDeparted(departureTime)) {
-            Cancellation rejected = buildRejected(canRef, booking, reason,
-                    "Flight has already departed — cancellation not allowed.");
+            String rejectReason = "Flight has already departed — cancellation not allowed.";
+            Cancellation rejected = buildRejected(canRef, booking, reason, rejectReason);
             Cancellation saved = cancellationRepository.save(rejected);
+            // SAGA CANCEL-STEP-2 REJECTED
+            sagaOrchestrator.onCancellationRejected(
+                    booking.getBookingReference(), canRef, rejectReason);
             notificationService.sendRejectionNotification(
                     booking.getUserEmail(), username,
                     booking.getBookingReference(), rejected.getCancellationReason());
@@ -183,6 +199,10 @@ public class CancellationService {
         // Step 3: Cancel booking in booking-service
         bookingServiceClient.cancelBooking(booking.getId());
 
+        // SAGA CANCEL-STEP-3 — booking cancelled, refund about to be processed
+        sagaOrchestrator.onBookingCancelledRefundPending(
+                booking.getBookingReference(), canRef, refundPct, refundAmt.toPlainString());
+
         // Step 4: Process refund
         String message;
         if (refundPct > 0) {
@@ -191,6 +211,10 @@ public class CancellationService {
                 cancellation.setRefundTransactionId(txnId);
                 cancellation.setStatus(CancellationStatus.REFUNDED);
                 cancellationRepository.save(cancellation);
+
+                // SAGA CANCEL-STEP-4 COMPLETED
+                sagaOrchestrator.onCancellationCompleted(
+                        booking.getBookingReference(), canRef, refundPct, refundAmt.toPlainString());
 
                 // Step 5: Confirmation email
                 notificationService.sendCancellationConfirmation(cancellation);
@@ -201,6 +225,9 @@ public class CancellationService {
             } catch (Exception e) {
                 // Refund gateway failed — still cancelled, refund pending manual retry
                 log.error("Refund gateway error: {}", e.getMessage());
+                // SAGA CANCEL-STEP-3 DEGRADED — compensating state
+                sagaOrchestrator.onRefundGatewayFailure(
+                        booking.getBookingReference(), canRef, e.getMessage());
                 cancellation.setStatus(CancellationStatus.APPROVED); // refund still pending
                 cancellationRepository.save(cancellation);
                 message = "Booking cancelled. Refund of Rs." + refundAmt
@@ -210,6 +237,10 @@ public class CancellationService {
             // 0% refund — within 6h window
             cancellation.setStatus(CancellationStatus.NO_REFUND);
             cancellationRepository.save(cancellation);
+
+            // SAGA CANCEL-STEP-3 NO_REFUND
+            sagaOrchestrator.onNoRefundCancellation(
+                    booking.getBookingReference(), canRef, policyDesc);
 
             // Step 5: No-refund notification
             notificationService.sendNoRefundNotification(cancellation, policyDesc);
@@ -237,7 +268,7 @@ public class CancellationService {
                 .orElseThrow(() -> new CancellationNotFoundException(
                         "Cancellation not found with id: " + id));
         if (!c.getUserId().equals(username)) {
-            throw new BadRequestException("Access denied to cancellation id: " + id);
+            throw new AccessDeniedException("Access denied to cancellation id: " + id);
         }
         return toResponse(c, null);
     }
@@ -248,7 +279,7 @@ public class CancellationService {
                 .orElseThrow(() -> new CancellationNotFoundException(
                         "Cancellation not found: " + ref));
         if (!c.getUserId().equals(username)) {
-            throw new BadRequestException("Access denied to cancellation: " + ref);
+            throw new AccessDeniedException("Access denied to cancellation: " + ref);
         }
         return toResponse(c, null);
     }
@@ -259,7 +290,7 @@ public class CancellationService {
                 .orElseThrow(() -> new CancellationNotFoundException(
                         "No cancellation found for booking: " + bookingId));
         if (!c.getUserId().equals(username)) {
-            throw new BadRequestException("Access denied to cancellation for booking: "
+            throw new AccessDeniedException("Access denied to cancellation for booking: "
                     + bookingId);
         }
         return toResponse(c, null);

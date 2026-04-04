@@ -1,8 +1,12 @@
 package com.flight.booking_service.service;
 
 import com.flight.booking_service.dto.*;
+import com.flight.booking_service.cqrs.CommandHandler;
+import com.flight.booking_service.cqrs.QueryHandler;
 import com.flight.booking_service.exception.BadRequestException;
 import com.flight.booking_service.exception.BookingNotFoundException;
+import com.flight.booking_service.saga.BookingSagaOrchestrator;
+import org.springframework.security.access.AccessDeniedException;
 import com.flight.booking_service.model.*;
 import com.flight.booking_service.repository.BookingRepository;
 import com.flight.booking_service.repository.PassengerRepository;
@@ -24,9 +28,11 @@ public class BookingService {
     private final PassengerRepository passengerRepository;
     private final FlightServiceClient flightServiceClient;
     private final EmailService emailService;
+    private final BookingSagaOrchestrator sagaOrchestrator;
 
     // ── Step 1: Create Booking ─────────────────────────────────────────────────
 
+    @CommandHandler("CreateBooking")
     @Transactional
     public BookingResponse createBooking(CreateBookingRequest request,
                                          String username, String userEmail) {
@@ -96,6 +102,12 @@ public class BookingService {
         log.info("Booking created: ref={}, user={}, amount={}",
                 bookingRef, username, totalAmount);
 
+        // SAGA STEP 1 — booking created, awaiting payment
+        sagaOrchestrator.onBookingCreated(
+                bookingRef, username,
+                request.getPassengers().size(),
+                totalAmount.toPlainString());
+
         BookingResponse response = toResponse(saved);
         response.setNextStep("Proceed to POST /payments/initiate  |  bookingId="
                 + saved.getId() + "  |  bookingReference=" + bookingRef
@@ -105,6 +117,7 @@ public class BookingService {
 
     // ── Confirm / Fail Booking (internal — called by payment-service) ──────────
 
+    @CommandHandler("ConfirmOrFailBooking")
     @Transactional
     public BookingResponse confirmBooking(ConfirmBookingRequest request) {
         log.info("Confirming booking: ref={}, payment={}, status={}",
@@ -130,6 +143,16 @@ public class BookingService {
 
         log.info("Booking {} updated to {}", saved.getBookingReference(), saved.getStatus());
 
+        // SAGA STEP 3 — happy path or compensating transaction
+        if (isConfirmed) {
+            sagaOrchestrator.onSagaCompleted(
+                    request.getBookingReference(), request.getPaymentReference());
+        } else {
+            sagaOrchestrator.onSagaCompensated(
+                    request.getBookingReference(), request.getPaymentReference(),
+                    "Payment processing failed");
+        }
+
         List<Passenger> passengers = saved.getPassengers();
         if (isConfirmed) {
             emailService.sendBookingConfirmation(saved, passengers);
@@ -141,6 +164,7 @@ public class BookingService {
 
     // ── Get My Bookings ────────────────────────────────────────────────────────
 
+    @QueryHandler("GetMyBookings")
     @Transactional(readOnly = true)
     public List<BookingResponse> getMyBookings(String username) {
         log.info("Fetching bookings for user={}", username);
@@ -152,39 +176,42 @@ public class BookingService {
 
     // ── Get by ID ──────────────────────────────────────────────────────────────
 
+    @QueryHandler("GetBookingById")
     @Transactional(readOnly = true)
     public BookingResponse getBookingById(Long id, String username) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new BookingNotFoundException(
                         "Booking not found with id: " + id));
         if (!booking.getUserId().equals(username)) {
-            throw new BadRequestException("Access denied to booking id: " + id);
+            throw new AccessDeniedException("Access denied to booking id: " + id);
         }
         return toResponse(booking);
     }
 
     // ── Get by Reference ───────────────────────────────────────────────────────
 
+    @QueryHandler("GetBookingByReference")
     @Transactional(readOnly = true)
     public BookingResponse getBookingByReference(String ref, String username) {
         Booking booking = bookingRepository.findByBookingReference(ref)
                 .orElseThrow(() -> new BookingNotFoundException(
                         "Booking not found: " + ref));
         if (!booking.getUserId().equals(username)) {
-            throw new BadRequestException("Access denied to booking: " + ref);
+            throw new AccessDeniedException("Access denied to booking: " + ref);
         }
         return toResponse(booking);
     }
 
     // ── Cancel Booking ─────────────────────────────────────────────────────────
 
+    @CommandHandler("CancelBooking")
     @Transactional
     public BookingResponse cancelBooking(Long id, String username) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new BookingNotFoundException(
                         "Booking not found with id: " + id));
         if (!booking.getUserId().equals(username)) {
-            throw new BadRequestException("Access denied to booking id: " + id);
+            throw new AccessDeniedException("Access denied to booking id: " + id);
         }
         if (booking.getStatus() == BookingStatus.CANCELLED) {
             throw new BadRequestException("Booking is already cancelled.");
@@ -202,6 +229,7 @@ public class BookingService {
 
     // ── Internal: get booking details (called by cancellation-service) ────────
 
+    @QueryHandler("GetBookingByIdInternal")
     @Transactional(readOnly = true)
     public BookingResponse getBookingByIdInternal(Long id) {
         Booking booking = bookingRepository.findById(id)
@@ -212,6 +240,7 @@ public class BookingService {
 
     // ── Internal: cancel booking (called by cancellation-service) ─────────────
 
+    @CommandHandler("CancelBookingInternal")
     @Transactional
     public void cancelBookingInternal(Long id) {
         Booking booking = bookingRepository.findById(id)
@@ -228,6 +257,7 @@ public class BookingService {
 
     // ── Admin: All Bookings ────────────────────────────────────────────────────
 
+    @QueryHandler("GetAllBookings")
     @Transactional(readOnly = true)
     public List<BookingResponse> getAllBookings() {
         return bookingRepository.findAllByOrderByCreatedAtDesc()
@@ -279,6 +309,7 @@ public class BookingService {
 
     // ── Step 1: View passenger list for a booking ──────────────────────────────
 
+    @QueryHandler("GetPassengers")
     @Transactional(readOnly = true)
     public List<PassengerResponse> getPassengers(Long bookingId, String username) {
         log.info("Fetching passengers for bookingId={}, user={}", bookingId, username);
@@ -286,7 +317,7 @@ public class BookingService {
                 .orElseThrow(() -> new BookingNotFoundException(
                         "Booking not found with id: " + bookingId));
         if (!booking.getUserId().equals(username)) {
-            throw new BadRequestException("Access denied to booking id: " + bookingId);
+            throw new AccessDeniedException("Access denied to booking id: " + bookingId);
         }
         return passengerRepository.findByBookingId(bookingId)
                 .stream()
@@ -296,6 +327,7 @@ public class BookingService {
 
     // ── Step 2: Modify — update a single passenger's details ──────────────────
 
+    @CommandHandler("UpdatePassenger")
     @Transactional
     public PassengerResponse updatePassenger(Long bookingId,
                                              Long passengerId,
@@ -309,7 +341,7 @@ public class BookingService {
                 .orElseThrow(() -> new BookingNotFoundException(
                         "Booking not found with id: " + bookingId));
         if (!booking.getUserId().equals(username)) {
-            throw new BadRequestException("Access denied to booking id: " + bookingId);
+            throw new AccessDeniedException("Access denied to booking id: " + bookingId);
         }
 
         // Only allow modification on PENDING_PAYMENT bookings
@@ -346,6 +378,7 @@ public class BookingService {
 
     // ── Admin: Update booking status ──────────────────────────────────────────
 
+    @CommandHandler("UpdateBookingStatus")
     @Transactional
     public BookingResponse updateBookingStatus(Long id, UpdateBookingStatusRequest req) {
         log.info("ADMIN status update — bookingId={}, newStatus={}, reason={}",
@@ -374,6 +407,7 @@ public class BookingService {
 
     // ── Admin: Booking statistics ─────────────────────────────────────────────
 
+    @QueryHandler("GetBookingStats")
     @Transactional(readOnly = true)
     public BookingStatsResponse getBookingStats() {
         log.info("Generating booking statistics");

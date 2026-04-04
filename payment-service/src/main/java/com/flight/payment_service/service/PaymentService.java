@@ -4,6 +4,7 @@ import com.flight.payment_service.dto.InitiatePaymentRequest;
 import com.flight.payment_service.dto.PaymentResponse;
 import com.flight.payment_service.exception.BadRequestException;
 import com.flight.payment_service.exception.PaymentNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import com.flight.payment_service.model.Payment;
 import com.flight.payment_service.model.PaymentMethod;
 import com.flight.payment_service.model.PaymentStatus;
@@ -25,6 +26,8 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final BookingServiceClient bookingServiceClient;
 
+    private static final String SAGA_TAG = "[BOOKING-SAGA]";
+
     @Transactional
     public PaymentResponse initiatePayment(InitiatePaymentRequest request, String userId) {
         log.info("Initiating payment: bookingRef={}, method={}, user={}",
@@ -39,6 +42,12 @@ public class PaymentService {
         }
 
         String payRef = generatePaymentReference();
+
+        // SAGA STEP 2 — payment processing begins
+        log.info("{} STEP-2 [PAYMENT_PROCESSING] payRef={} bookingRef={} method={}",
+                SAGA_TAG, payRef, request.getBookingReference(), request.getPaymentMethod());
+        log.info("{} STEP-2 Status: PENDING_PAYMENT → PAYMENT_PROCESSING", SAGA_TAG);
+
         Payment payment = Payment.builder()
                 .paymentReference(payRef)
                 .bookingId(request.getBookingId())
@@ -61,6 +70,17 @@ public class PaymentService {
         log.info("Payment {} -- status={}, txn={}", payRef, payment.getStatus(), result.transactionId());
 
         String bookingStatus = result.success() ? "CONFIRMED" : "PAYMENT_FAILED";
+
+        // SAGA STEP 3 — notify booking-service of outcome (choreography callback)
+        if (result.success()) {
+            log.info("{} STEP-3a [CALLBACK] Payment SUCCESS — payRef={} bookingRef={} → CONFIRMED",
+                    SAGA_TAG, payRef, request.getBookingReference());
+        } else {
+            log.warn("{} STEP-3b [CALLBACK] Payment FAILED — payRef={} bookingRef={} reason={} → PAYMENT_FAILED",
+                    SAGA_TAG, payRef, request.getBookingReference(), result.failureReason());
+            log.warn("{} STEP-3b Compensating transaction will be applied by booking-service", SAGA_TAG);
+        }
+
         bookingServiceClient.updateBookingStatus(
                 request.getBookingReference(), payRef, bookingStatus);
 
@@ -76,7 +96,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new PaymentNotFoundException("Payment not found: " + id));
         if (!payment.getUserId().equals(userId)) {
-            throw new BadRequestException("Access denied to this payment");
+            throw new AccessDeniedException("Access denied to this payment");
         }
         return toResponse(payment, null, null);
     }
@@ -86,7 +106,7 @@ public class PaymentService {
         Payment payment = paymentRepository.findByPaymentReference(ref)
                 .orElseThrow(() -> new PaymentNotFoundException("Payment not found: " + ref));
         if (!payment.getUserId().equals(userId)) {
-            throw new BadRequestException("Access denied to this payment");
+            throw new AccessDeniedException("Access denied to this payment");
         }
         return toResponse(payment, null, null);
     }
@@ -97,7 +117,7 @@ public class PaymentService {
                 .orElseThrow(() -> new PaymentNotFoundException(
                         "No payment found for booking: " + bookingId));
         if (!payment.getUserId().equals(userId)) {
-            throw new BadRequestException("Access denied to this payment");
+            throw new AccessDeniedException("Access denied to this payment");
         }
         return toResponse(payment, null, null);
     }

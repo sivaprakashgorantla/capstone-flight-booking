@@ -174,6 +174,34 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    // ── Upcoming Bookings (CONFIRMED + departure in future) ────────────────────
+
+    @QueryHandler("GetUpcomingBookings")
+    @Transactional(readOnly = true)
+    public List<BookingResponse> getUpcomingBookings(String username) {
+        log.info("Fetching upcoming bookings for user={}", username);
+        return bookingRepository
+                .findByUserIdAndStatusAndDepartureTimeAfterOrderByDepartureTimeAsc(
+                        username, BookingStatus.CONFIRMED, java.time.LocalDateTime.now())
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    // ── Completed Bookings (CONFIRMED + arrival in past) ──────────────────────
+
+    @QueryHandler("GetCompletedBookings")
+    @Transactional(readOnly = true)
+    public List<BookingResponse> getCompletedBookings(String username) {
+        log.info("Fetching completed bookings for user={}", username);
+        return bookingRepository
+                .findByUserIdAndStatusAndArrivalTimeBeforeOrderByArrivalTimeDesc(
+                        username, BookingStatus.CONFIRMED, java.time.LocalDateTime.now())
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     // ── Get by ID ──────────────────────────────────────────────────────────────
 
     @QueryHandler("GetBookingById")

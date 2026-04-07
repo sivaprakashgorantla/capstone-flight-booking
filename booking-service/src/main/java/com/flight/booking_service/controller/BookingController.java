@@ -107,6 +107,40 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success(list.size() + " booking(s) found", list));
     }
 
+    // ── Upcoming Bookings ─────────────────────────────────────────────────────
+
+    @GetMapping("/my/upcoming")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(
+        summary     = "View my upcoming bookings",
+        description = "Returns CONFIRMED bookings where departure time is in the future, sorted by nearest departure."
+    )
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getUpcomingBookings(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String username = userDetails.getUsername();
+        log.info("GET /bookings/my/upcoming — user={}", username);
+        List<BookingResponse> list = bookingService.getUpcomingBookings(username);
+        return ResponseEntity.ok(ApiResponse.success(list.size() + " upcoming booking(s)", list));
+    }
+
+    // ── Completed Bookings ────────────────────────────────────────────────────
+
+    @GetMapping("/my/completed")
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(
+        summary     = "View my completed bookings",
+        description = "Returns CONFIRMED bookings where arrival time is in the past, sorted by most recent."
+    )
+    public ResponseEntity<ApiResponse<List<BookingResponse>>> getCompletedBookings(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String username = userDetails.getUsername();
+        log.info("GET /bookings/my/completed — user={}", username);
+        List<BookingResponse> list = bookingService.getCompletedBookings(username);
+        return ResponseEntity.ok(ApiResponse.success(list.size() + " completed booking(s)", list));
+    }
+
     // ── Step 2 & 3: Select booking + Show details (by ID) ────────────────────
 
     @GetMapping("/{id}")

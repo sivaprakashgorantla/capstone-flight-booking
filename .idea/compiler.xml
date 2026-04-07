@@ -13,7 +13,7 @@
         <module name="eureka-server" />
         <module name="flight-service" />
         <module name="notification-service" />
-        <module name="manage-bookings-service" />
+        <module name="ai-service" />
         <module name="auth-service" />
         <module name="payment-service" />
         <module name="cancellation-service" />
@@ -22,9 +22,13 @@
         <module name="api-gateway" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="manage-bookings-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ai-service" options="-parameters" />
       <module name="analytics-reporting-service" options="-parameters" />
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />

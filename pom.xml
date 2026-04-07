@@ -45,6 +45,7 @@
         <module>support-service</module>
         <module>notification-service</module>
         <module>analytics-reporting-service</module>
+        <module>ai-service</module>
     </modules>
 
 </project>

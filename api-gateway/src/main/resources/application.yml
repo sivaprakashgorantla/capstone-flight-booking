@@ -120,6 +120,16 @@ spring:
                 name: analyticsCircuitBreaker
                 fallbackUri: forward:/fallback
 
+        - id: ai-service
+          uri: lb://AI-SERVICE
+          predicates:
+            - Path=/ai/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: aiCircuitBreaker
+                fallbackUri: forward:/fallback
+
 eureka:
   client:
     service-url:
@@ -150,6 +160,8 @@ resilience4j:
         timeoutDuration: 15s
       analyticsCircuitBreaker:
         timeoutDuration: 15s
+      aiCircuitBreaker:
+        timeoutDuration: 30s
 
   circuitbreaker:
     instances:
@@ -189,6 +201,11 @@ resilience4j:
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 3
       analyticsCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+      aiCircuitBreaker:
         slidingWindowSize: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
